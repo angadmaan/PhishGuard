@@ -1,7 +1,7 @@
 # 🛡️ PhishGuard — Phishing URL Detector
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat&logo=python)
-![Flask](https://img.shields.io/badge/Flask-2.x-black?style=flat&logo=flask)
+![Python](https://img.shields.io/badge/Python-yellow?style=flat&logo=python)
+![Flask](https://img.shields.io/badge/Flask-black?style=flat&logo=flask)
 ![Status](https://img.shields.io/badge/Status-Live-brightgreen?style=flat)
 
 A web-based phishing URL detection tool built with Python and Flask.  
@@ -34,7 +34,7 @@ PhishGuard analyzes a URL across 5 security checks and returns:
 
 - **Backend:** Python 3, Flask
 - **Frontend:** HTML5, CSS3, Vanilla JavaScript
-- **Deployment:** Render.com (free tier)
+- **Deployment:** Render.com
 
 ---
 
@@ -83,4 +83,5 @@ Safe Browsing.
 
 **Angad Singh Maan**  
 B.Tech CSE | Cybersecurity | Linux | Networking
+
 [LinkedIn](https://linkedin.com/in/angad-singh-maan) · [GitHub](https://github.com/angadmaan)

@@ -42,7 +42,7 @@ PhishGuard analyzes a URL across 5 security checks and returns:
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/phishguard.git
+git clone https://github.com/angadmaan/phishguard.git
 cd phishguard
 
 # 2. Create and activate virtual environment
@@ -81,6 +81,6 @@ Safe Browsing.
 
 ## 👤 Author
 
-**Your Name**  
-B.Tech CSE | Guru Nanak Dev University  
+**Angad Singh Maan**  
+B.Tech CSE | Cybersecurity | Linux | Networking
 [LinkedIn](https://linkedin.com/in/angad-singh-maan) · [GitHub](https://github.com/angadmaan)

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard — Phishing URL Detector</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #0a0e16;
+            color: #f5f7fa;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* ── Header ── */
+        .header { text-align: center; margin-bottom: 36px; }
+        .header h1 { font-size: 2.4rem; color: #22d3ee; letter-spacing: 2px; }
+        .header p  { color: #7a8699; margin-top: 8px; font-size: 1rem; }
+
+        /* ── Scanner Card ── */
+        .card {
+            background: #111827;
+            border: 1px solid #1e2a3a;
+            border-radius: 12px;
+            padding: 28px;
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 20px;
+        }
+
+        .input-group { display: flex; gap: 12px; }
+
+        .url-input {
+            flex: 1;
+            background: #0a0e16;
+            border: 1px solid #1e2a3a;
+            border-radius: 8px;
+            padding: 14px 18px;
+            color: #f5f7fa;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .url-input:focus       { border-color: #22d3ee; }
+        .url-input::placeholder { color: #3d4759; }
+
+        .scan-btn {
+            background: #22d3ee;
+            color: #0a0e16;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .scan-btn:hover    { background: #06b6d4; }
+        .scan-btn:disabled { background: #3d4759; cursor: not-allowed; }
+
+        /* ── Loading ── */
+        .loading { text-align: center; color: #22d3ee; padding: 16px; display: none; }
+
+        /* ── Results Card ── */
+        .results-card { display: none; }
+        .results-card.visible { display: block; }
+
+        /* ── Verdict Banner ── */
+        .verdict-banner {
+            text-align: center;
+            padding: 24px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+        .verdict-banner.safe       { background: rgba(34,197,94,0.1);  border: 1px solid #22c55e; }
+        .verdict-banner.suspicious { background: rgba(251,146,60,0.1); border: 1px solid #fb923c; }
+        .verdict-banner.dangerous  { background: rgba(239,68,68,0.1);  border: 1px solid #ef4444; }
+
+        .verdict-label { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .safe       .verdict-label { color: #22c55e; }
+        .suspicious .verdict-label { color: #fb923c; }
+        .dangerous  .verdict-label { color: #ef4444; }
+
+        .verdict-message { color: #7a8699; font-size: 0.95rem; }
+
+        /* ── Score Bar ── */
+        .score-section { margin-bottom: 24px; }
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            color: #7a8699;
+        }
+        .score-bar {
+            background: #1e2a3a;
+            border-radius: 100px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .score-fill {
+            height: 100%;
+            border-radius: 100px;
+            width: 0%;
+            transition: width 0.8s ease;
+        }
+        .score-fill.safe       { background: #22c55e; }
+        .score-fill.suspicious { background: #fb923c; }
+        .score-fill.dangerous  { background: #ef4444; }
+
+        /* ── Check Breakdown ── */
+        .breakdown-title {
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            color: #7a8699;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .check-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid #1e2a3a;
+            gap: 12px;
+        }
+        .check-item:last-child { border-bottom: none; }
+
+        .check-left { display: flex; gap: 12px; flex: 1; }
+        .check-icon { font-size: 1.1rem; margin-top: 2px; }
+        .check-name   { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+        .check-reason { font-size: 0.82rem; color: #7a8699; }
+
+        .check-score {
+            font-family: monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .score-zero    { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .score-nonzero { background: rgba(239,68,68,0.1); color: #ef4444; }
+
+        /* ── Footer ── */
+        .footer { margin-top: 36px; color: #3d4759; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>🛡️ PhishGuard</h1>
+        <p>Detect phishing URLs instantly. Stay safe online.</p>
+    </div>
+
+    <!-- Scanner Input Card -->
+    <div class="card">
+        <div class="input-group">
+            <input
+                type="text"
+                class="url-input"
+                id="urlInput"
+                placeholder="Paste a URL to scan... e.g. http://paypal-verify.tk/login"
+            />
+            <button class="scan-btn" id="scanBtn" onclick="scanURL()">🔍 Scan</button>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading" id="loading">⏳ Scanning URL...</div>
+
+    <!-- Results Card -->
+    <div class="card results-card" id="resultsCard">
+
+        <!-- Verdict -->
+        <div class="verdict-banner" id="verdictBanner">
+            <div class="verdict-label"  id="verdictLabel"></div>
+            <div class="verdict-message" id="verdictMessage"></div>
+        </div>
+
+        <!-- Score Bar -->
+        <div class="score-section">
+            <div class="score-header">
+                <span>Threat Score</span>
+                <span id="scoreText"></span>
+            </div>
+            <div class="score-bar">
+                <div class="score-fill" id="scoreFill"></div>
+            </div>
+        </div>
+
+        <!-- Check Breakdown -->
+        <div class="breakdown-title">Check Breakdown</div>
+        <div id="checksList"></div>
+
+    </div>
+
+    <div class="footer">Built with Python + Flask &nbsp;·&nbsp; PhishGuard v1.0</div>
+
+    <script>
+        // ── Main Scan Function ──
+        async function scanURL() {
+            const url    = document.getElementById("urlInput").value.trim();
+            const btn    = document.getElementById("scanBtn");
+            const loader = document.getElementById("loading");
+            const card   = document.getElementById("resultsCard");
+
+            if (!url) { alert("Please enter a URL to scan."); return; }
+
+            // Show loading state
+            btn.disabled     = true;
+            btn.textContent  = "Scanning...";
+            loader.style.display = "block";
+            card.classList.remove("visible");
+
+            try {
+                const res  = await fetch("/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                displayResults(data);
+            } catch (err) {
+                alert("Something went wrong. Make sure Flask is running.");
+            } finally {
+                btn.disabled    = false;
+                btn.textContent = "🔍 Scan";
+                loader.style.display = "none";
+            }
+        }
+
+        // ── Display Results ──
+        function displayResults(data) {
+            const cls = data.verdict === "Safe"
+                ? "safe" : data.verdict === "Suspicious"
+                ? "suspicious" : "dangerous";
+
+            const icons = { safe: "✅", suspicious: "⚠️", dangerous: "🚨" };
+
+            // Verdict banner
+            document.getElementById("verdictBanner").className = `verdict-banner ${cls}`;
+            document.getElementById("verdictLabel").textContent  = `${icons[cls]} ${data.verdict}`;
+            document.getElementById("verdictMessage").textContent = data.message;
+
+            // Score bar
+            const pct = (data.total_score / data.max_score) * 100;
+            document.getElementById("scoreText").textContent = `${data.total_score} / ${data.max_score}`;
+            const fill = document.getElementById("scoreFill");
+            fill.className = `score-fill ${cls}`;
+            setTimeout(() => { fill.style.width = pct + "%"; }, 50);
+
+            // Check breakdown
+            const list = document.getElementById("checksList");
+            list.innerHTML = data.checks.map(c => {
+                const icon      = c.result === "PASS" ? "✅" : c.result === "WARNING" ? "⚠️" : "❌";
+                const scoreCSS  = c.score === 0 ? "score-zero" : "score-nonzero";
+                return `
+                <div class="check-item">
+                    <div class="check-left">
+                        <span class="check-icon">${icon}</span>
+                        <div>
+                            <div class="check-name">${c.check}</div>
+                            <div class="check-reason">${c.reason}</div>
+                        </div>
+                    </div>
+                    <span class="check-score ${scoreCSS}">+${c.score}</span>
+                </div>`;
+            }).join("");
+
+            document.getElementById("resultsCard").classList.add("visible");
+        }
+
+        // ── Press Enter to Scan ──
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("urlInput")
+                .addEventListener("keypress", e => { if (e.key === "Enter") scanURL(); });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+# Virtual environment — never upload this
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Mac system file
+.DS_Store
+
+# Environment variables (if you add secrets later)
+.env
+
+# VS Code settings
+.vscode/

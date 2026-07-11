@@ -7,3 +7,5 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+
+# Adding these files to make the project live 

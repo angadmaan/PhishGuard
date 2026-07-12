@@ -181,3 +181,5 @@ if __name__ == "__main__":
                 f"  {icon} {check['check']:<30} | "
                 f"Score: {check['score']} | {check['reason']}"
             )
+
+# DONE!!

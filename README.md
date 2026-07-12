@@ -66,7 +66,8 @@ Then open `http://127.0.0.1:5000` in your browser.
 
 > ✅ Safe URL
 ![Safe Result](screenshots/safe.png)
-
+> 🤨 Suspicious URL
+![Suspicious Result](screenshots/suspicious.png)
 > 🚨 Dangerous URL  
 ![Dangerous Result](screenshots/dangerous.png)
 

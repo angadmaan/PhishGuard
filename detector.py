@@ -66,7 +66,7 @@ def check_url_length(url):
 def check_suspicious_keywords(url):
     keywords = [
         "login", "verify", "bank", "secure", "account", "update",
-        "confirm", "password", "signin", "paypal", "support", "urgent",
+        "confirm", "password", "signin", "support", "urgent",
         "suspend", "alert", "expire", "unlock", "wallet", "billing",
         "notification", "security", "restricted", "invoice", "authenticate",
         "recover", "restore", "validate", "credential"

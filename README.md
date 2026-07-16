@@ -48,7 +48,7 @@ PhishGuard analyzes a URL across 5 security checks and returns:
 
 ---
 
-## 🚀 Run Locally
+## 🚀 To Run Locally
 
 ```bash
 # 1. Clone the repo

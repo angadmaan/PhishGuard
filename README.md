@@ -20,15 +20,23 @@ PhishGuard analyzes a URL across 5 security checks and returns:
 
 ---
 
-## 🔍 Detection Checks
+## 🔍 Detection Checks (12 Total)
 
 | Check | What It Detects |
 |---|---|
 | ✅ HTTPS Check | Missing SSL — unencrypted connection |
 | ✅ IP Address Check | Raw IP used instead of domain name |
 | ✅ URL Length Check | Abnormally long URLs hiding fake domains |
-| ✅ Suspicious Keywords | Words like login, verify, bank, paypal |
-| ✅ Domain Extension | Shady extensions like .tk .ml .xyz |
+| ✅ Suspicious Keywords | Words like login, verify, bank, paypal, wallet |
+| ✅ Domain Extension | Shady extensions like .tk .ml .xyz .buzz .icu |
+| 🆕 @ Symbol Redirect | Tricks like google.com@evil.com |
+| 🆕 Subdomain Depth | Excessive subdomains impersonating brands |
+| 🆕 Hyphen Abuse | Domains with excessive hyphens |
+| 🆕 Punycode Detection | International character spoofing (xn--) |
+| 🆕 URL Shortener | Hidden destinations via bit.ly, tinyurl, etc. |
+| 🆕 Unusual Port | Non-standard ports like :8443 |
+| 🆕 Brand Impersonation | Fake domains mimicking Google, PayPal, Apple, etc. |
+
 
 ---
 

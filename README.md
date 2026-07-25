@@ -14,7 +14,7 @@ Paste any URL and get an instant threat score with a detailed breakdown.
 ## 🎯 What It Does
 
 PhishGuard analyzes a URL across 5 security checks and returns:
-- A **Threat Score** out of 100
+- A **Threat Score** out of 200
 - A **Verdict** — Safe / Suspicious / Dangerous
 - A full **Check Breakdown** explaining every flag
 

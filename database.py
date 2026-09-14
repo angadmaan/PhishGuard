@@ -185,6 +185,20 @@ def add_community_report(url: str, report_type: str, comment: str) -> str:
     conn.close()
     return report_id
 
+def get_community_reports(limit: int = 50):
+    """Retrieves recent community threat and false positive submissions."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT id, url, report_type, comment, created_at
+    FROM community_reports
+    ORDER BY created_at DESC
+    LIMIT ?
+    """, (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
 def is_valid_api_key(api_key: str) -> bool:
     """Validates whether a developer API key exists."""
     if not api_key:

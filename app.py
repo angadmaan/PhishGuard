@@ -124,7 +124,7 @@ def api_community_report():
     data = request.get_json() or {}
     url = data.get("url", "").strip()
     report_type = data.get("report_type", "new_phish")
-    comment = data.get("comment", "").strip()
+    comment = (data.get("comment") or data.get("notes") or "").strip()
 
     if not url:
         return jsonify({"error": "Missing 'url' parameter."}), 400
@@ -134,6 +134,15 @@ def api_community_report():
         "status": "success",
         "report_id": report_id,
         "message": "Report submitted to PhishGuard intelligence."
+    })
+
+@app.route("/api/v1/community/reports", methods=["GET"])
+@limiter.limit("60 per minute")
+def get_community_reports_list():
+    reports = database.get_community_reports(50)
+    return jsonify({
+        "total": len(reports),
+        "reports": reports
     })
 
 

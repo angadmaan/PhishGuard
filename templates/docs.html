@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard API Documentation — Swagger UI</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0a0e16;
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* ── Top Bar ── */
+        .api-top-bar {
+            background: #111827;
+            border-bottom: 1px solid #1e2a3a;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .api-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #f1f5f9;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .api-nav-links {
+            display: flex;
+            gap: 12px;
+        }
+        .api-nav-link {
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .api-nav-link:hover {
+            color: #38bdf8;
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        /* ── Swagger UI Dark Overrides ── */
+        .swagger-ui {
+            filter: invert(88%) hue-rotate(180deg);
+        }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui .info .title { color: #000000 !important; }
+        #swagger-ui {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="api-top-bar">
+        <a href="/" class="api-brand">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="PhishGuard" style="height: 28px;">
+            <span>PhishGuard API Docs</span>
+        </a>
+        <div class="api-nav-links">
+            <a href="/" class="api-nav-link">🔍 Scanner</a>
+            <a href="/dashboard" class="api-nav-link">📊 Threat Dashboard</a>
+            <a href="/openapi.json" target="_blank" class="api-nav-link" style="color: #38bdf8;">JSON Spec ↗</a>
+        </div>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+        window.onload = () => {
+            window.ui = SwaggerUIBundle({
+                url: "/openapi.json",
+                dom_id: "#swagger-ui",
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ]
+            });
+        };
+    </script>
+</body>
+</html>

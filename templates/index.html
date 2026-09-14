@@ -3,15 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhishGuard — Phishing URL Detector</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>PhishGuard — Secure Every Click</title>
+    <meta name="description" content="PhishGuard detects phishing URLs and malicious links instantly.">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=2.1">
+    <style>
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 720px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #1e2a3a;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #f1f5f9;
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover {
+            color: #38bdf8;
+            background: rgba(30, 41, 59, 0.6);
+        }
+        .nav-link.active {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        .report-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #38bdf8;
+            color: #0a0e16;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 10px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .report-action-btn:hover {
+            background: #0284c7;
+        }
+    </style>
 </head>
 <body>
 
+    <!-- Top Navigation Bar -->
+    <nav class="nav-bar">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="PhishGuard" style="height: 24px;">
+            <span>PhishGuard</span>
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link active">🔍 Scanner</a>
+            <a href="/dashboard" class="nav-link">📊 Threat Dashboard</a>
+            <a href="/docs" class="nav-link">📖 API Docs</a>
+        </div>
+    </nav>
+
     <!-- Header -->
     <div class="header">
-        <h1>🛡️ PhishGuard</h1>
-        <p>Detect phishing URLs instantly. Stay safe online.</p>
+        <div class="brand-text-col">
+            <img src="{{ url_for('static', filename='phishguard-title-image1.png') }}" alt="PhishGuard" class="brand-title-img">
+            <p class="tagline">Secure Every Click</p>
+        </div>
     </div>
 
     <!-- Scanner Input Card -->
@@ -21,28 +97,51 @@
                 type="text"
                 class="url-input"
                 id="urlInput"
-                placeholder="Paste a URL to scan... e.g. http://paypal-verify.tk/login"
+                placeholder="Paste a URL to scan... e.g. https://paypa1-security.com/login"
+                autocomplete="off"
+                spellcheck="false"
             />
-            <button class="scan-btn" id="scanBtn" onclick="scanURL()">🔍 Scan</button>
+            <button class="scan-btn" id="scanBtn" onclick="scanURL()">🔍 Scan URL</button>
+        </div>
+
+        <!-- Sample URL Pills -->
+        <div class="sample-pills">
+            <span class="sample-label">Try sample:</span>
+            <button class="pill-btn" onclick="testSample('https://accounts.google.com/signin')">Verified Google</button>
+            <button class="pill-btn" onclick="testSample('https://paypa1-security.com/login')">Typosquatting</button>
+            <button class="pill-btn" onclick="testSample('https://xkq89mzw2la-phish.biz')">DGA Entropy</button>
+            <button class="pill-btn" onclick="testSample('http://192.168.1.1/admin')">Raw IP</button>
         </div>
     </div>
 
     <!-- Loading Indicator -->
-    <div class="loading" id="loading">⏳ Scanning URL...</div>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <span>Analyzing URL threat signals...</span>
+    </div>
 
     <!-- Results Card -->
     <div class="card results-card" id="resultsCard">
 
-        <!-- Verdict -->
+        <!-- Resolved Unshortened URL Banner -->
+        <div class="unshortened-banner" id="unshortenedBanner" style="display: none;">
+            <span class="unshortened-icon">🔗</span>
+            <div>
+                <strong>Resolved Destination:</strong>
+                <span id="unshortenedLink" class="unshortened-url"></span>
+            </div>
+        </div>
+
+        <!-- Verdict Banner -->
         <div class="verdict-banner" id="verdictBanner">
-            <div class="verdict-label"  id="verdictLabel"></div>
+            <div class="verdict-label" id="verdictLabel"></div>
             <div class="verdict-message" id="verdictMessage"></div>
         </div>
 
         <!-- Score Bar -->
         <div class="score-section">
             <div class="score-header">
-                <span>Threat Score</span>
+                <span>Threat Risk Score</span>
                 <span id="scoreText"></span>
             </div>
             <div class="score-bar">
@@ -51,14 +150,71 @@
         </div>
 
         <!-- Check Breakdown -->
-        <div class="breakdown-title">Check Breakdown</div>
+        <div class="breakdown-header">
+            <div class="breakdown-title">Security Telemetry (17 Checks — Click ▼ for info)</div>
+            <span class="breakdown-count" id="flaggedCount">0 Flags</span>
+        </div>
         <div id="checksList"></div>
+
+        <!-- Action Row (Export Threat Report & Dashboard Link) -->
+        <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid #1e2a3a; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <a id="exportReportBtn" href="#" class="report-action-btn">
+                📄 Export Threat Report (PDF)
+            </a>
+            <a href="/dashboard" style="color: #94a3b8; font-size: 0.85rem; text-decoration: none;">
+                📊 View Threat Dashboard →
+            </a>
+        </div>
 
     </div>
 
-    <div class="footer">Built with Python + Flask &nbsp;·&nbsp; PhishGuard v1.0</div>
+    <div class="footer">
+        <strong>PhishGuard</strong> — Secure Every Click &nbsp;·&nbsp; Built by <a href="https://github.com/angadmaan" target="_blank" rel="noopener">Angad Singh Maan</a>
+    </div>
 
     <script>
+        // ── Explanations for Every Check (< 40 words each) ──
+        const CHECK_INFO = {
+            "HTTPS Encryption": "Checks if the website encrypts your connection using SSL/TLS. Sites without HTTPS expose your passwords and sensitive information to anyone snooping on the network.",
+            "IP Hostname": "Checks if the link uses a raw numerical IP address instead of a domain name. Attackers use raw IPs to bypass safety filters and hide fraudulent servers.",
+            "URL Length": "Analyzes the overall length of the address. Phishers often create unnaturally long links to hide malicious parameters and trick security scanners.",
+            "Credential Keywords": "Detects sensitive words like 'login', 'verify', or 'bank' on untrusted domains. Scammers use these to lure you into submitting private passwords or credit cards.",
+            "Domain Extension (TLD)": "Checks the domain ending (like .tk, .xyz, or .top). Certain low-cost or free domain extensions are heavily abused to host disposable scam sites.",
+            "@ Symbol Redirection": "Catches the '@' redirect trick. Web browsers ignore any text before the '@' sign and redirect you straight to the attacker's server.",
+            "Subdomain Depth": "Checks for nested subdomains. Attackers frequently stack words like 'paypal.com.verify' before their real domain to deceive users at a glance.",
+            "Hyphen Stacking": "Looks for excessive hyphens in the domain. Attackers often string words together (like 'secure-chase-login-update') to mimic official corporate links.",
+            "Punycode / Homograph Attack": "Detects foreign lookalike characters (Punycode). Attackers use Cyrillic or Greek letters that look identical to normal letters to fake familiar brand websites.",
+            "Domain Entropy (DGA)": "Measures character randomness. Cybercriminals use automated scripts to generate random domain names (DGAs) that are rapidly registered and discarded.",
+            "Typosquatting & Lookalike": "Detects subtle misspellings of popular brands (like 'paypa1' or 'g00gle'). Attackers count on typos to steal credentials on lookalike pages.",
+            "Brand Impersonation": "Detects if an unauthorized website uses a major brand's name without being their verified official domain, catching copycat phishing portals.",
+            "Unusual Port": "Verifies whether the link uses standard web ports (80 or 443). Non-standard ports (like :8443) are often used to host unauthorized backdoor services.",
+            "URL Shortener": "Detects short links (like bit.ly) that conceal where you are actually heading. PhishGuard safely resolves the shortcut to reveal the true destination.",
+            "Domain Age (RDAP)": "Queries ICANN records to see when the domain was registered. Over 70% of phishing attacks use newly created domains registered less than 14 to 30 days ago.",
+            "DNS & Mail Records": "Verifies that the domain has active nameservers, valid IP addresses, and authentic mail servers. Fake or broken domains without real infrastructure are quickly caught.",
+            "SSL Certificate Telemetry": "Inspects the security certificate on the live website to verify its expiration date, trusted certificate authority, and ensure it matches the actual domain name."
+        };
+
+        function testSample(sampleUrl) {
+            document.getElementById("urlInput").value = sampleUrl;
+            scanURL();
+        }
+
+        // ── Toggle More Info Accordion ──
+        function toggleCheckInfo(idx) {
+            const drawer = document.getElementById(`infoDrawer-${idx}`);
+            const arrow = document.getElementById(`arrow-${idx}`);
+            if (!drawer || !arrow) return;
+
+            const isOpen = drawer.classList.contains("open");
+            if (isOpen) {
+                drawer.classList.remove("open");
+                arrow.classList.remove("open");
+            } else {
+                drawer.classList.add("open");
+                arrow.classList.add("open");
+            }
+        }
+
         // ── Main Scan Function ──
         async function scanURL() {
             const url    = document.getElementById("urlInput").value.trim();
@@ -66,27 +222,37 @@
             const loader = document.getElementById("loading");
             const card   = document.getElementById("resultsCard");
 
-            if (!url) { alert("Please enter a URL to scan."); return; }
+            if (!url) {
+                alert("Please enter a URL to scan.");
+                return;
+            }
 
             // Show loading state
             btn.disabled     = true;
-            btn.textContent  = "Scanning...";
-            loader.style.display = "block";
+            btn.textContent  = "Inspecting...";
+            loader.style.display = "flex";
             card.classList.remove("visible");
 
             try {
-                const res  = await fetch("/analyze", {
+                const res = await fetch("/analyze", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ url })
                 });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    alert(errData.error || "Failed to analyze URL.");
+                    return;
+                }
+
                 const data = await res.json();
                 displayResults(data);
             } catch (err) {
-                alert("Something went wrong. Make sure Flask is running.");
+                alert("Could not connect to the PhishGuard scanning service. Ensure Flask is running.");
             } finally {
                 btn.disabled    = false;
-                btn.textContent = "🔍 Scan";
+                btn.textContent = "🔍 Scan URL";
                 loader.style.display = "none";
             }
         }
@@ -99,33 +265,67 @@
 
             const icons = { safe: "✅", suspicious: "⚠️", dangerous: "🚨" };
 
+            // Unshortened Banner
+            const unshortenedDiv = document.getElementById("unshortenedBanner");
+            if (data.unshortened_url) {
+                document.getElementById("unshortenedLink").textContent = data.unshortened_url;
+                unshortenedDiv.style.display = "flex";
+            } else {
+                unshortenedDiv.style.display = "none";
+            }
+
             // Verdict banner
             document.getElementById("verdictBanner").className = `verdict-banner ${cls}`;
             document.getElementById("verdictLabel").textContent  = `${icons[cls]} ${data.verdict}`;
             document.getElementById("verdictMessage").textContent = data.message;
 
             // Score bar
-            const pct = (data.total_score / data.max_score) * 100;
-            document.getElementById("scoreText").textContent = `${data.total_score} / ${data.max_score}`;
+            const pct = Math.min(100, Math.round((data.total_score / data.max_score) * 100));
+            document.getElementById("scoreText").textContent = `${data.total_score} / ${data.max_score} (${pct}% Risk)`;
             const fill = document.getElementById("scoreFill");
             fill.className = `score-fill ${cls}`;
             setTimeout(() => { fill.style.width = pct + "%"; }, 50);
 
-            // Check breakdown
+            // Flagged Count
+            const flagged = data.checks.filter(c => c.result !== "PASS");
+            const flagEl = document.getElementById("flaggedCount");
+            flagEl.textContent = `${flagged.length} Flag${flagged.length === 1 ? '' : 's'}`;
+            flagEl.className = flagged.length > 0 ? "breakdown-count flagged" : "breakdown-count clean";
+
+            // Update Report Export Link
+            if (data.report_url) {
+                document.getElementById("exportReportBtn").href = data.report_url;
+                document.getElementById("exportReportBtn").style.display = "inline-flex";
+            }
+
+            // Check breakdown with expandable info
             const list = document.getElementById("checksList");
-            list.innerHTML = data.checks.map(c => {
-                const icon      = c.result === "PASS" ? "✅" : c.result === "WARNING" ? "⚠️" : "❌";
-                const scoreCSS  = c.score === 0 ? "score-zero" : "score-nonzero";
+            list.innerHTML = data.checks.map((c, idx) => {
+                const icon     = c.result === "PASS" ? "✅" : c.result === "WARNING" ? "⚠️" : "❌";
+                const scoreCSS = c.score === 0 ? "score-zero" : "score-nonzero";
+                const infoText = CHECK_INFO[c.check] || "Security check evaluated against known phishing patterns.";
+
                 return `
-                <div class="check-item">
-                    <div class="check-left">
-                        <span class="check-icon">${icon}</span>
-                        <div>
-                            <div class="check-name">${c.check}</div>
-                            <div class="check-reason">${c.reason}</div>
+                <div class="check-item-wrapper ${c.result !== 'PASS' ? 'check-highlight' : ''}">
+                    <div class="check-item" onclick="toggleCheckInfo(${idx})">
+                        <div class="check-left">
+                            <span class="check-icon">${icon}</span>
+                            <div>
+                                <div class="check-name">${c.check}</div>
+                                <div class="check-reason">${c.reason}</div>
+                            </div>
+                        </div>
+                        <div class="check-right">
+                            <span class="check-score ${scoreCSS}">${c.score === 0 ? '0' : '+' + c.score}</span>
+                            <span class="info-arrow" id="arrow-${idx}" title="Click to view check explanation">▾</span>
                         </div>
                     </div>
-                    <span class="check-score ${scoreCSS}">+${c.score}</span>
+                    <div class="check-info-drawer" id="infoDrawer-${idx}">
+                        <div class="info-content">
+                            <span class="info-badge">💡 What is this check?</span>
+                            <p class="info-text">${infoText}</p>
+                        </div>
+                    </div>
                 </div>`;
             }).join("");
 
@@ -141,5 +341,3 @@
 
 </body>
 </html>
-
-<!-- DONE!!! -->

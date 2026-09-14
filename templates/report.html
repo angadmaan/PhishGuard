@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Report {{ scan.id }} — PhishGuard</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .report-page {
+            width: 100%;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .report-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .report-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e293b;
+            color: #f1f5f9;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .report-btn:hover {
+            background: #334155;
+            color: #38bdf8;
+            border-color: #38bdf8;
+        }
+        .report-btn-primary {
+            background: #ef4444;
+            color: #ffffff;
+            border: none;
+        }
+        .report-btn-primary:hover {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        /* ── Report Paper Container ── */
+        .report-paper {
+            background: #111827;
+            border: 1px solid #1e2a3a;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 15px 35px -5px rgba(0,0,0,0.6);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #1e2a3a;
+            padding-bottom: 24px;
+            margin-bottom: 24px;
+        }
+
+        .report-meta-id {
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+        .report-meta-sub {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* ── Executive Summary Grid ── */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .summary-card {
+            background: #0a0e16;
+            border: 1px solid #1e2a3a;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .summary-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .summary-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            word-break: break-all;
+        }
+
+        .target-url-box {
+            background: #0a0e16;
+            border: 1px dashed #334155;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 28px;
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            font-size: 0.95rem;
+            color: #38bdf8;
+            word-break: break-all;
+        }
+
+        /* ── Telemetry Table ── */
+        .section-heading {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .telemetry-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+        .telemetry-table th {
+            text-align: left;
+            background: #0a0e16;
+            color: #94a3b8;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #1e2a3a;
+        }
+        .telemetry-table td {
+            padding: 14px;
+            border-bottom: 1px solid #1e2a3a;
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+        .telemetry-table tr:last-child td { border-bottom: none; }
+
+        .telemetry-status {
+            display: inline-block;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .status-pass { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .status-warning { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+        .status-fail { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* ── Recommendations ── */
+        .recs-box {
+            background: rgba(30, 41, 59, 0.4);
+            border-left: 4px solid #38bdf8;
+            border-radius: 0 8px 8px 0;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+        .recs-box.dangerous { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
+        .recs-list { list-style: none; padding: 0; margin-top: 10px; }
+        .recs-list li {
+            padding: 6px 0;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ── Print / PDF Stylesheet ── */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+            }
+            .report-actions, .footer { display: none !important; }
+            .report-paper {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+            }
+            .summary-card, .target-url-box, .telemetry-table th {
+                background: #f8fafc !important;
+                border-color: #cbd5e1 !important;
+                color: #0f172a !important;
+            }
+            .summary-value, .report-meta-id, .section-heading {
+                color: #0f172a !important;
+            }
+            .telemetry-table td {
+                border-bottom: 1px solid #e2e8f0 !important;
+                color: #1e293b !important;
+            }
+            .recs-box {
+                background: #f8fafc !important;
+            }
+            .status-pass { background: #dcfce7 !important; color: #166534 !important; }
+            .status-warning { background: #ffedd5 !important; color: #9a3412 !important; }
+            .status-fail { background: #fee2e2 !important; color: #991b1b !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="report-page">
+
+        <!-- Top Navigation / Action Bar -->
+        <div class="report-actions">
+            <div>
+                <a href="/" class="report-btn">← Back to Scanner</a>
+                <a href="/dashboard" class="report-btn">📊 Threat Dashboard</a>
+            </div>
+            <button onclick="window.print()" class="report-btn report-btn-primary">
+                🖨️ Export Threat Report (PDF)
+            </button>
+        </div>
+
+        <!-- Printable Threat Report Container -->
+        <div class="report-paper">
+
+            <!-- Report Header -->
+            <div class="report-header">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="PhishGuard" style="height: 32px;">
+                        <span style="font-size: 1.4rem; font-weight: 800; color: #f1f5f9;">PhishGuard</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #38bdf8; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">
+                        Threat Intelligence Incident Report
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="report-meta-id">{{ scan.id }}</div>
+                    <div class="report-meta-sub">{{ scan.created_at }}</div>
+                </div>
+            </div>
+
+            <!-- Verdict Banner -->
+            <div class="verdict-banner {{ scan.verdict.lower() }}">
+                <div class="verdict-label">
+                    {% if scan.verdict == 'Safe' %}✅{% elif scan.verdict == 'Suspicious' %}⚠️{% else %}🚨{% endif %}
+                    {{ scan.verdict }} Verdict
+                </div>
+                <div class="verdict-message">
+                    Composite Threat Score: {{ scan.total_score }} / {{ scan.max_score }} ({{ scan.risk_percentage }}% Risk Rating)
+                </div>
+            </div>
+
+            <!-- Target URL -->
+            <div class="summary-label">Target URL Inspected:</div>
+            <div class="target-url-box">{{ scan.url }}</div>
+
+            <!-- Executive Summary -->
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Target Domain</div>
+                    <div class="summary-value">{{ scan.domain }}</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Threat Level</div>
+                    <div class="summary-value" style="color: {% if scan.verdict == 'Dangerous' %}#ef4444{% elif scan.verdict == 'Suspicious' %}#fb923c{% else %}#22c55e{% endif %};">
+                        {% if scan.verdict == 'Dangerous' %}Critical Risk{% elif scan.verdict == 'Suspicious' %}Elevated Risk{% else %}Verified Low Risk{% endif %}
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Security Flags</div>
+                    <div class="summary-value">{{ scan.flags_count }} Flag{{ 's' if scan.flags_count != 1 else '' }} Triggered</div>
+                </div>
+            </div>
+
+            <!-- Telemetry Breakdown Table -->
+            <div class="section-heading">🔍 Indicator of Compromise (IOC) & Telemetry Breakdown</div>
+            <table class="telemetry-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Security Check</th>
+                        <th style="width: 15%;">Result</th>
+                        <th style="width: 50%;">Telemetry Details</th>
+                        <th style="width: 10%;">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in scan.checks %}
+                    <tr>
+                        <td><strong>{{ c.check }}</strong></td>
+                        <td>
+                            <span class="telemetry-status {% if c.result == 'PASS' %}status-pass{% elif c.result == 'WARNING' %}status-warning{% else %}status-fail{% endif %}">
+                                {{ c.result }}
+                            </span>
+                        </td>
+                        <td>{{ c.reason }}</td>
+                        <td style="font-family: monospace; font-weight: 700;">
+                            {% if c.score == 0 %}0{% else %}+{{ c.score }}{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Security Analyst Recommendations -->
+            <div class="recs-box {% if scan.verdict == 'Dangerous' %}dangerous{% endif %}">
+                <div class="section-heading" style="margin-bottom: 6px;">
+                    🛡️ Security Analyst Recommendations
+                </div>
+                <ul class="recs-list">
+                    {% if scan.verdict == 'Dangerous' %}
+                    <li>🚫 <strong>Perimeter Defense:</strong> Block domain <code>{{ scan.domain }}</code> at DNS resolver and web proxies immediately.</li>
+                    <li>🔒 <strong>User Remediation:</strong> If entered credentials, initiate immediate password reset and invalidate active sessions.</li>
+                    <li>📡 <strong>Abuse Notification:</strong> Submit report to upstream registrar and hosting provider for swift takedown.</li>
+                    {% elif scan.verdict == 'Suspicious' %}
+                    <li>⚠️ <strong>User Caution:</strong> Advise users not to enter financial or authentication credentials on this domain.</li>
+                    <li>🔍 <strong>Continuous Monitoring:</strong> Monitor domain age and DNS changes over the next 14 days.</li>
+                    {% else %}
+                    <li>✅ <strong>Normal Operation:</strong> Domain passes standard cybersecurity verifications and matches expected legitimate properties.</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div style="font-size: 0.78rem; color: #64748b; text-align: center; margin-top: 30px; border-top: 1px solid #1e2a3a; padding-top: 16px;">
+                PhishGuard Threat Intelligence Platform &nbsp;·&nbsp; Secure Every Click &nbsp;·&nbsp; Incident Verification Hash: {{ scan.id }}
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

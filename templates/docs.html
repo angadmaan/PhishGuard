@@ -45,10 +45,19 @@
             padding: 6px 12px;
             border-radius: 6px;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .api-nav-link:hover {
             color: #38bdf8;
             background: rgba(30, 41, 59, 0.6);
+        }
+
+        .pg-icon {
+            display: inline-block;
+            vertical-align: -2px;
+            flex-shrink: 0;
         }
 
         /* ── Swagger UI Dark Overrides ── */
@@ -62,6 +71,34 @@
             margin: 0 auto;
             padding: 20px;
         }
+
+        /* ── Mobile Responsiveness ── */
+        @media (max-width: 640px) {
+            .api-top-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: center;
+                padding: 12px 14px;
+                text-align: center;
+            }
+            .api-brand {
+                font-size: 1.05rem;
+            }
+            .api-nav-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 6px;
+                width: 100%;
+            }
+            .api-nav-link {
+                font-size: 0.78rem;
+                padding: 5px 8px;
+            }
+            #swagger-ui {
+                padding: 10px 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -72,8 +109,14 @@
             <span>PhishGuard API Docs</span>
         </a>
         <div class="api-nav-links">
-            <a href="/" class="api-nav-link">🔍 Scanner</a>
-            <a href="/dashboard" class="api-nav-link">📊 Threat Dashboard</a>
+            <a href="/" class="api-nav-link">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Scanner</span>
+            </a>
+            <a href="/dashboard" class="api-nav-link">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                <span>Threat Dashboard</span>
+            </a>
             <a href="/openapi.json" target="_blank" class="api-nav-link" style="color: #38bdf8;">JSON Spec ↗</a>
         </div>
     </div>

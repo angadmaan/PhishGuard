@@ -185,6 +185,87 @@
             gap: 10px;
         }
 
+        /* ── Responsive Table ── */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 32px;
+        }
+
+        /* ── Mobile Responsiveness ── */
+        @media (max-width: 640px) {
+            .report-paper {
+                padding: 16px 14px;
+                border-radius: 8px;
+            }
+            .report-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+                padding-bottom: 16px;
+                margin-bottom: 18px;
+            }
+            .report-header > div:last-child {
+                text-align: left !important;
+            }
+            .report-meta-id {
+                font-size: 1.05rem;
+                word-break: break-all;
+            }
+            .report-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+            .report-actions > div {
+                display: flex;
+                gap: 8px;
+                width: 100%;
+            }
+            .report-actions > div .report-btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.82rem;
+                padding: 9px 8px;
+                text-align: center;
+            }
+            .report-btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .summary-card {
+                padding: 12px 14px;
+            }
+            .summary-value {
+                font-size: 1.05rem;
+            }
+            .target-url-box {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+                word-break: break-all;
+                overflow-wrap: anywhere;
+            }
+            .telemetry-table {
+                min-width: 540px;
+                margin-bottom: 0;
+            }
+            .recs-box {
+                padding: 14px 12px;
+                margin-bottom: 20px;
+            }
+            .recs-list li {
+                font-size: 0.85rem;
+                align-items: flex-start;
+            }
+        }
+
         /* ── Print / PDF Stylesheet ── */
         @media print {
             body {
@@ -227,11 +308,18 @@
         <!-- Top Navigation / Action Bar -->
         <div class="report-actions">
             <div>
-                <a href="/" class="report-btn">← Back to Scanner</a>
-                <a href="/dashboard" class="report-btn">📊 Threat Dashboard</a>
+                <a href="/" class="report-btn">
+                    <svg class="pg-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    <span>Back to Scanner</span>
+                </a>
+                <a href="/dashboard" class="report-btn">
+                    <svg class="pg-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    <span>Threat Dashboard</span>
+                </a>
             </div>
             <button onclick="window.print()" class="report-btn report-btn-primary">
-                🖨️ Export Threat Report (PDF)
+                <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                <span>Export Threat Report (PDF)</span>
             </button>
         </div>
 
@@ -257,9 +345,15 @@
 
             <!-- Verdict Banner -->
             <div class="verdict-banner {{ scan.verdict.lower() }}">
-                <div class="verdict-label">
-                    {% if scan.verdict == 'Safe' %}✅{% elif scan.verdict == 'Suspicious' %}⚠️{% else %}🚨{% endif %}
-                    {{ scan.verdict }} Verdict
+                <div class="verdict-label" style="display: flex; align-items: center; gap: 8px;">
+                    {% if scan.verdict == 'Safe' %}
+                    <svg class="pg-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#22c55e" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                    {% elif scan.verdict == 'Suspicious' %}
+                    <svg class="pg-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#fb923c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    {% else %}
+                    <svg class="pg-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#ef4444" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    {% endif %}
+                    <span>{{ scan.verdict }} Verdict</span>
                 </div>
                 <div class="verdict-message">
                     Composite Threat Score: {{ scan.total_score }} / {{ scan.max_score }} ({{ scan.risk_percentage }}% Risk Rating)
@@ -289,49 +383,73 @@
             </div>
 
             <!-- Telemetry Breakdown Table -->
-            <div class="section-heading">🔍 Indicator of Compromise (IOC) & Telemetry Breakdown</div>
-            <table class="telemetry-table">
-                <thead>
-                    <tr>
-                        <th style="width: 25%;">Security Check</th>
-                        <th style="width: 15%;">Result</th>
-                        <th style="width: 50%;">Telemetry Details</th>
-                        <th style="width: 10%;">Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for c in scan.checks %}
-                    <tr>
-                        <td><strong>{{ c.check }}</strong></td>
-                        <td>
-                            <span class="telemetry-status {% if c.result == 'PASS' %}status-pass{% elif c.result == 'WARNING' %}status-warning{% else %}status-fail{% endif %}">
-                                {{ c.result }}
-                            </span>
-                        </td>
-                        <td>{{ c.reason }}</td>
-                        <td style="font-family: monospace; font-weight: 700;">
-                            {% if c.score == 0 %}0{% else %}+{{ c.score }}{% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="section-heading">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="18" height="18" stroke="#38bdf8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Indicator of Compromise (IOC) &amp; Telemetry Breakdown</span>
+            </div>
+            <div class="table-responsive">
+                <table class="telemetry-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Security Check</th>
+                            <th style="width: 15%;">Result</th>
+                            <th style="width: 50%;">Telemetry Details</th>
+                            <th style="width: 10%;">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in scan.checks %}
+                        <tr>
+                            <td><strong>{{ c.check }}</strong></td>
+                            <td>
+                                <span class="telemetry-status {% if c.result == 'PASS' %}status-pass{% elif c.result == 'WARNING' %}status-warning{% else %}status-fail{% endif %}">
+                                    {{ c.result }}
+                                </span>
+                            </td>
+                            <td>{{ c.reason }}</td>
+                            <td style="font-family: monospace; font-weight: 700;">
+                                {% if c.score == 0 %}0{% else %}+{{ c.score }}{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Security Analyst Recommendations -->
             <div class="recs-box {% if scan.verdict == 'Dangerous' %}dangerous{% endif %}">
                 <div class="section-heading" style="margin-bottom: 6px;">
-                    🛡️ Security Analyst Recommendations
+                    <svg class="pg-icon" viewBox="0 0 24 24" width="18" height="18" stroke="#38bdf8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>Security Analyst Recommendations</span>
                 </div>
                 <ul class="recs-list">
                     {% if scan.verdict == 'Dangerous' %}
-                    <li>🚫 <strong>Perimeter Defense:</strong> Block domain <code>{{ scan.domain }}</code> at DNS resolver and web proxies immediately.</li>
-                    <li>🔒 <strong>User Remediation:</strong> If entered credentials, initiate immediate password reset and invalidate active sessions.</li>
-                    <li>📡 <strong>Abuse Notification:</strong> Submit report to upstream registrar and hosting provider for swift takedown.</li>
+                    <li>
+                        <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                        <span><strong>Perimeter Defense:</strong> Block domain <code>{{ scan.domain }}</code> at DNS resolver and web proxies immediately.</span>
+                    </li>
+                    <li>
+                        <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <span><strong>User Remediation:</strong> If entered credentials, initiate immediate password reset and invalidate active sessions.</span>
+                    </li>
+                    <li>
+                        <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+                        <span><strong>Abuse Notification:</strong> Submit report to upstream registrar and hosting provider for swift takedown.</span>
+                    </li>
                     {% elif scan.verdict == 'Suspicious' %}
-                    <li>⚠️ <strong>User Caution:</strong> Advise users not to enter financial or authentication credentials on this domain.</li>
-                    <li>🔍 <strong>Continuous Monitoring:</strong> Monitor domain age and DNS changes over the next 14 days.</li>
+                    <li>
+                        <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="#fb923c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span><strong>User Caution:</strong> Advise users not to enter financial or authentication credentials on this domain.</span>
+                    </li>
+                    <li>
+                        <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="#fb923c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span><strong>Continuous Monitoring:</strong> Monitor domain age and DNS changes over the next 14 days.</span>
+                    </li>
                     {% else %}
-                    <li>✅ <strong>Normal Operation:</strong> Domain passes standard cybersecurity verifications and matches expected legitimate properties.</li>
+                    <li>
+                        <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="#22c55e" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Normal Operation:</strong> Domain passes standard cybersecurity verifications and matches expected legitimate properties.</span>
+                    </li>
                     {% endif %}
                 </ul>
             </div>

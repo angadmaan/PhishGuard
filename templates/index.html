@@ -17,6 +17,8 @@
             margin-bottom: 24px;
             padding-bottom: 12px;
             border-bottom: 1px solid #1e2a3a;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .nav-brand {
             display: flex;
@@ -30,6 +32,7 @@
         .nav-links {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .nav-link {
             text-decoration: none;
@@ -39,6 +42,10 @@
             padding: 6px 12px;
             border-radius: 6px;
             transition: all 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .nav-link:hover {
             color: #38bdf8;
@@ -65,6 +72,46 @@
         .report-action-btn:hover {
             background: #0284c7;
         }
+
+        .results-actions {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid #1e2a3a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .nav-bar {
+                justify-content: center;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 18px;
+                padding-bottom: 12px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                gap: 6px;
+            }
+            .nav-link {
+                font-size: 0.78rem;
+                padding: 6px 10px;
+            }
+            .results-actions {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 12px;
+            }
+            .report-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -76,16 +123,25 @@
             <span>PhishGuard</span>
         </a>
         <div class="nav-links">
-            <a href="/" class="nav-link active">🔍 Scanner</a>
-            <a href="/dashboard" class="nav-link">📊 Threat Dashboard</a>
-            <a href="/docs" class="nav-link">📖 API Docs</a>
+            <a href="/" class="nav-link active">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Scanner</span>
+            </a>
+            <a href="/dashboard" class="nav-link">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                <span>Threat Dashboard</span>
+            </a>
+            <a href="/docs" class="nav-link">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span>API Docs</span>
+            </a>
         </div>
     </nav>
 
     <!-- Header -->
     <div class="header">
         <div class="brand-text-col">
-            <img src="{{ url_for('static', filename='phishguard-title-image1.png') }}?v=4" alt="PhishGuard" class="brand-title-img">
+            <h1 class="brand-title"><span class="title-red">P</span><span class="title-white">hish</span><span class="title-red">Guard</span></h1>
             <p class="tagline">Secure Every Click</p>
         </div>
     </div>
@@ -101,7 +157,10 @@
                 autocomplete="off"
                 spellcheck="false"
             />
-            <button class="scan-btn" id="scanBtn" onclick="scanURL()">🔍 Scan URL</button>
+            <button class="scan-btn" id="scanBtn" onclick="scanURL()">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Scan URL</span>
+            </button>
         </div>
 
         <!-- Sample URL Pills -->
@@ -125,7 +184,9 @@
 
         <!-- Resolved Unshortened URL Banner -->
         <div class="unshortened-banner" id="unshortenedBanner" style="display: none;">
-            <span class="unshortened-icon">🔗</span>
+            <span class="unshortened-icon">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="16" height="16" stroke="#38bdf8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            </span>
             <div>
                 <strong>Resolved Destination:</strong>
                 <span id="unshortenedLink" class="unshortened-url"></span>
@@ -157,12 +218,14 @@
         <div id="checksList"></div>
 
         <!-- Action Row (Export Threat Report & Dashboard Link) -->
-        <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid #1e2a3a; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div class="results-actions">
             <a id="exportReportBtn" href="#" class="report-action-btn">
-                📄 Export Threat Report (PDF)
+                <svg class="pg-icon" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                <span>Export Threat Report (PDF)</span>
             </a>
-            <a href="/dashboard" style="color: #94a3b8; font-size: 0.85rem; text-decoration: none;">
-                📊 View Threat Dashboard →
+            <a href="/dashboard" style="color: #94a3b8; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                <svg class="pg-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                <span>View Threat Dashboard →</span>
             </a>
         </div>
 
@@ -251,8 +314,8 @@
             } catch (err) {
                 alert("Could not connect to the PhishGuard scanning service. Ensure Flask is running.");
             } finally {
-                btn.disabled    = false;
-                btn.textContent = "🔍 Scan URL";
+                btn.disabled  = false;
+                btn.innerHTML = '<svg class="pg-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> <span>Scan URL</span>';
                 loader.style.display = "none";
             }
         }
@@ -263,7 +326,17 @@
                 ? "safe" : data.verdict === "Suspicious"
                 ? "suspicious" : "dangerous";
 
-            const icons = { safe: "✅", suspicious: "⚠️", dangerous: "🚨" };
+            const verdictIcons = {
+                safe: `<svg class="pg-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#22c55e" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>`,
+                suspicious: `<svg class="pg-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#fb923c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                dangerous: `<svg class="pg-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#ef4444" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`
+            };
+
+            const checkIcons = {
+                PASS: `<svg class="pg-icon" viewBox="0 0 24 24" width="16" height="16" stroke="#22c55e" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+                WARNING: `<svg class="pg-icon" viewBox="0 0 24 24" width="16" height="16" stroke="#fb923c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                FAIL: `<svg class="pg-icon" viewBox="0 0 24 24" width="16" height="16" stroke="#ef4444" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`
+            };
 
             // Unshortened Banner
             const unshortenedDiv = document.getElementById("unshortenedBanner");
@@ -276,7 +349,7 @@
 
             // Verdict banner
             document.getElementById("verdictBanner").className = `verdict-banner ${cls}`;
-            document.getElementById("verdictLabel").textContent  = `${icons[cls]} ${data.verdict}`;
+            document.getElementById("verdictLabel").innerHTML  = `${verdictIcons[cls]} <span>${data.verdict} Verdict</span>`;
             document.getElementById("verdictMessage").textContent = data.message;
 
             // Score bar
@@ -301,7 +374,7 @@
             // Check breakdown with expandable info
             const list = document.getElementById("checksList");
             list.innerHTML = data.checks.map((c, idx) => {
-                const icon     = c.result === "PASS" ? "✅" : c.result === "WARNING" ? "⚠️" : "❌";
+                const icon     = checkIcons[c.result] || checkIcons.PASS;
                 const scoreCSS = c.score === 0 ? "score-zero" : "score-nonzero";
                 const infoText = CHECK_INFO[c.check] || "Security check evaluated against known phishing patterns.";
 
@@ -322,7 +395,10 @@
                     </div>
                     <div class="check-info-drawer" id="infoDrawer-${idx}">
                         <div class="info-content">
-                            <span class="info-badge">💡 What is this check?</span>
+                            <span class="info-badge">
+                                <svg class="pg-icon" viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                Technical Analysis
+                            </span>
                             <p class="info-text">${infoText}</p>
                         </div>
                     </div>
